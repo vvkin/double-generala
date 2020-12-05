@@ -1,0 +1,9 @@
+{% extends '_base.html' %}
+
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('play.static', filename='play.css') }}" />
+{% endblock %}
+
+{% block content %}
+    <h1>Hi, {{ name }}</h1>
+{% endblock %}
