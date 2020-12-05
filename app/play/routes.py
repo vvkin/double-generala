@@ -11,6 +11,7 @@ def home():
 
 @play.route('/play')
 def play_game():
-    if session.get('name') is not None:
-        return render_template('play.html')
+    name = session.get('name')
+    if name is not None:
+        return render_template('play.html', name=name)
     return redirect(url_for('play.home'))

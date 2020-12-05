@@ -1,9 +1,21 @@
 {% extends '_base.html' %}
+{% from '_profile.html' import render_profile %}
 
 {% block links %}
     <link rel="stylesheet" href="{{ url_for('play.static', filename='play.css') }}" />
 {% endblock %}
 
 {% block content %}
-    <h1>Hi, {{ name }}</h1>
+    <div class="wrapper">
+        <div class="board">
+            <div class="computer">
+                {{ render_profile('player', name) }}
+            </div>
+            <div class="center"></div>
+            <div class="player">
+                {{ render_profile('bot', 'bot') }}
+            </div>
+        </div>
+        <div class="tables"></div>
+    </div>
 {% endblock %}
