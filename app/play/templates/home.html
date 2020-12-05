@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('play.static', filename='css/home.css') }}"/>
+{% endblock %}
+
+{% block content %}
+    <section class="content">
+        <h1>Double Generala</h1>
+        <form method="POST" action="">
+            <input type="text" name="name" placeholder="What's your name?" autofocus required/>
+            <button id="submit">Go!</button>
+        </form>
+    </section>
+{% endblock %}

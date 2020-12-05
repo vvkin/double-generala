@@ -9,8 +9,8 @@ def create_app(debug=True):
     app.debug = debug
     app.config['SECRET_KEY'] = 'secret_key'
 
-    from .play import play_bp
-    app.register_blueprint(play_bp)
+    from .play import play
+    app.register_blueprint(play)
     socketio.init_app(app)
     return app
 
