@@ -2,19 +2,18 @@
 {% from '_profile.html' import render_profile %}
 
 {% block links %}
-    <link rel="stylesheet" href="{{ url_for('play.static', filename='play.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('play.static', filename='css/play.css') }}" />
 {% endblock %}
 
 {% block content %}
     <div class="wrapper">
         <div class="board">
-            <div class="computer">
-                {{ render_profile('player', name) }}
+            {{ render_profile('player', name) }}
+            <div class="center">
+                <div class="first dices"></div>
+                <div class="second dices"></div>
             </div>
-            <div class="center"></div>
-            <div class="player">
-                {{ render_profile('bot', 'bot') }}
-            </div>
+            {{ render_profile('bot', 'bot') }}
         </div>
         <div class="tables"></div>
     </div>

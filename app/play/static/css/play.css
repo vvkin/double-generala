@@ -1,0 +1,50 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.board {
+    height: 100%;
+    width: 50%;
+    margin: 0.4em;
+    padding: 2em;
+    background-color: #35654d;
+    border-radius: 1em;
+}
+
+.center {
+    border: 2px solid white;
+    margin: 5em 0;
+    border-radius: 4em;
+    height: 20em;
+    box-shadow: inset 1px 1px 0.5em rgba(0,0,0,0.9);
+}
+
+.profile > img {
+    width: 5em;
+}
+
+.player-area {
+    display: flex;
+}
+
+.row {
+    display: flex;
+}
+
+.place {
+    width: 3.5em;
+    height: 3.5em;
+    border: 2px solid white;
+    border-radius: 0.4em;
+    margin: 0.3em;
+    box-shadow: inset 1px 1px 0.5em rgba(0,0,0,0.9);
+}
