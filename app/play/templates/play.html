@@ -15,6 +15,45 @@
             </div>
             {{ render_profile('player', name) }}
         </div>
-        <div class="tables"></div>
+        <div class="tables">
+            <table class="results">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        {% for i in range(5) %}
+                        <th>Round {{ i + 1 }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(2) %}
+                    <tr>
+                        <td>{% if i % 2 %}Bot{% else %}{{name}}{%endif %}</td>
+                        {% for i in range(5) %}
+                        <td></td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <table class="combinations">
+                <thead>
+                    <tr>
+                        <th>Combination</th>
+                        <th>I</th>
+                        <th>II</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for combination in range(10) %}
+                        <tr>
+                            <td>{{ combination }}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}

@@ -16,5 +16,8 @@
                 </div>
             {%- endfor %}
         </div>
+        {% if player != 'bot' %}
+            <img class="dice-cup" src="{{ url_for('play.static', filename='img/dice_cup.png') }}" />
+        {% endif %}
     </div>    
 {% endmacro %}

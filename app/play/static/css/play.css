@@ -13,11 +13,12 @@
     flex-direction: column;
     justify-content: space-between;
     width: 50%;
-    padding: 3em 2em;
+    min-width: 560px;
+    padding: 2.5em 2em;
     margin: 0.4em;
     background-color: #35654d;
-    border-radius: 1em;
     border: 2x solid #073a21;
+    border-radius: 1em;
     box-shadow: inset 0px 0px 0.7em rgba(0,0,0,0.5);
     -webkit-user-select: none; 
     -moz-user-select: none; 
@@ -55,6 +56,12 @@
 
 .player-area {
     display: flex;
+    align-items: flex-end;
+    max-height: 6.8em;
+}
+
+.places {
+    max-height: 7em;
 }
 
 .row {
@@ -89,4 +96,58 @@
 
 .number-1 {
     background-color: rgb(34, 34, 182);
+}
+
+.dice-cup {
+    width: 6.5em;
+    cursor: pointer;
+    margin-left: auto;
+    transform: rotate(-45deg);
+}
+
+.tables {
+    margin-top: 0.4em;
+    width: 50%;
+}
+
+table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    border-style: hidden;
+    border-radius: 1em;
+    font-size: 15px;
+    font-family: sans-serif;
+    min-width: 10em;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+table thead tr {
+    background-color: #35654d;
+    color: #ffffff;
+    text-align: left;
+}
+
+table th {
+    padding: 1.5em 1.3em;
+}
+
+table td {
+    padding: 1em 1.3em;
+}
+
+table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+
+.results {
+    margin-bottom: 2.5em;
+}
+
+.combinations td{
+    padding: 0.7em 2.5em;
 }
