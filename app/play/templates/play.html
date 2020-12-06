@@ -10,8 +10,16 @@
         <div class="board">
             {{ render_profile('bot', 'bot') }}
             <div class="center">
-                <div class="first dices"></div>
-                <div class="second dices"></div>
+                <div class="first dices">
+                    {% for i in range(5) %}
+                        <div id="dice-{{ i }}" class="dice"></div>
+                    {% endfor %}
+                </div>
+                <div class="second dices">
+                    {% for i in range(5, 10) %}
+                        <div id="dice-{{ i }}" class="dice"></div>
+                    {% endfor %}
+                </div>
             </div>
             {{ render_profile('player', name) }}
         </div>
@@ -56,4 +64,8 @@
             </table>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('play.static', filename='js/index.js') }}"></script>
 {% endblock %}

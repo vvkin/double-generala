@@ -27,10 +27,12 @@
 }
 
 .center {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 20em;
     border: 1px solid white;
-    margin: 5em 0;
     border-radius: 4em;
-    height: 18em;
     box-shadow: inset 0px 0px 0.7em rgba(0,0,0,0.5);
 }
 
@@ -68,7 +70,7 @@
     display: flex;
 }
 
-.number-0, .number-1, .place {
+.number-0, .number-1, .place, .dice {
     width: 3em;
     height: 3em;
     margin: 0 0.4em 0.4em 0;
@@ -144,3 +146,48 @@ table tr:nth-of-type(even) { background-color: #f3f3f3; }
 .combinations td:not(:first-child):hover {color: white; text-decoration: underline;}
 .combinations td:nth-child(2):hover {background-color: rgb(194, 31, 31);}
 .combinations td:nth-child(3):hover {background-color: rgb(34, 34, 182);}
+
+.dices {
+    display: grid;
+    grid-template-areas: 
+        "one two three"
+        "four five six"
+        "seven eight nine";
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 15em;
+    height: 60%;
+}
+
+#dice-0, #dice-5 {grid-area: one;}
+#dice-1, #dice-6 {grid-area: three;}
+#dice-2, #dice-7 {grid-area: five;}
+#dice-3, #dice-8 {grid-area: seven;}
+#dice-4, #dice-9 {grid-area: nine;}
+
+.dice {
+	display: grid;
+	grid-template-areas:
+		"a . c"
+		"e g f"
+		"d . b";
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.dot {
+	display: block;
+	align-self: center;
+	justify-self: center;
+    border-radius: 50%;
+    height: 0.65em;
+    width: 0.65em;
+	background-color: #000;
+}
+
+.dot:nth-child(2) {grid-area: b;}
+.dot:nth-child(3) {grid-area: c;}
+.dot:nth-child(4) {grid-area: d;}
+.dot:nth-child(5) {grid-area: e;}
+.dot:nth-child(6) {grid-area: f;}
+.dot:nth-child(odd):last-child {grid-area: g;}
