@@ -4,32 +4,53 @@
 }
 
 .wrapper {
-    height: 100vh;
-    width: 100vw;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    height: 100vh;
 }
 
 .board {
-    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     width: 50%;
+    padding: 3em 2em;
     margin: 0.4em;
-    padding: 2em;
     background-color: #35654d;
     border-radius: 1em;
+    border: 2x solid #073a21;
+    box-shadow: inset 0px 0px 0.7em rgba(0,0,0,0.5);
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none;
 }
 
 .center {
-    border: 2px solid white;
+    border: 1px solid white;
     margin: 5em 0;
     border-radius: 4em;
-    height: 20em;
-    box-shadow: inset 1px 1px 0.5em rgba(0,0,0,0.9);
+    height: 18em;
+    box-shadow: inset 0px 0px 0.7em rgba(0,0,0,0.5);
 }
 
-.profile > img {
+.profile {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    margin-right: 1.5em;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.profile img {
     width: 5em;
+    cursor: pointer;
+}
+
+.profile span {
+    padding: 0.05em;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .player-area {
@@ -40,11 +61,32 @@
     display: flex;
 }
 
-.place {
-    width: 3.5em;
-    height: 3.5em;
-    border: 2px solid white;
+.number-0, .number-1, .place {
+    width: 3em;
+    height: 3em;
+    margin: 0 0.4em 0.4em 0;
     border-radius: 0.4em;
-    margin: 0.3em;
-    box-shadow: inset 1px 1px 0.5em rgba(0,0,0,0.9);
+    border: 2px solid white;
+    box-sizing: border-box;
+}
+
+.number-0, .number-1 {
+    text-align: center;
+    line-height: 3em;
+    color: black;
+    border: 2px solid black;
+    font-weight: bold;
+}
+
+.place {
+    box-shadow: inset 1px 1px 0.5em rgba(0,0,0,0.7);
+    cursor: pointer;
+}
+
+.number-0 {
+    background-color: rgb(194, 31, 31);
+}
+
+.number-1 {
+    background-color: rgb(34, 34, 182);
 }

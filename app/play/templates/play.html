@@ -8,12 +8,12 @@
 {% block content %}
     <div class="wrapper">
         <div class="board">
-            {{ render_profile('player', name) }}
+            {{ render_profile('bot', 'bot') }}
             <div class="center">
                 <div class="first dices"></div>
                 <div class="second dices"></div>
             </div>
-            {{ render_profile('bot', 'bot') }}
+            {{ render_profile('player', name) }}
         </div>
         <div class="tables"></div>
     </div>

@@ -1,12 +1,15 @@
 {% macro render_profile(player, player_name) %}
     <div class="{{ player }} player-area">
         <div class="profile">
-            <img src = "{{ url_for('play.static', filename='img/' + player + '.png') }}" />
+            <img src = "{{ url_for('play.static', filename='img/' + player + '.png') }}" title="{{ player }}"/>
             <span>{{ player_name }}</span>
         </div>
         <div class="places">
             {%- for i in range(2) %}
                 <div class="row">
+                    <div class="number-{{ i }}">
+                        {% if i == 0 %} I {% else %} II {% endif %}
+                    </div>
                 {%- for j in range(5) %}
                     <div id="{{ player }}-{{ (i == 1) * 5 + j }}" class="place"></div>
                 {%- endfor %}
