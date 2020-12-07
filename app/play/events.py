@@ -12,14 +12,14 @@ def on_connect():
     print(f'User with sid {user_id} connected!')
 
 @socketio.on('roll dices', namespace='/play')
-def on_roll(group_idx):
+def on_roll():
     user_id = request.sid
     game = games[user_id]
-    game.roll_dices(group_idx)
-    game.update_prices(group_idx)
-    dices = list(game.state[group_idx])
-    prices = list(game.prices[group_idx])
-    emit('player dices', {'dices': dices, 'prices': prices, 'group_idx': group_idx})
+    game.roll_dices()
+    game.update_prices()
+    dices = list(game.dices)
+    prices = list(game.prices)
+    emit('player dices', {'dices': dices, 'prices': prices})
 
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():
