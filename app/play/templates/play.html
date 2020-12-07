@@ -10,16 +10,13 @@
         <div class="board">
             {{ render_profile('bot', 'bot') }}
             <div class="center">
-                <div class="first dices">
-                    {% for i in range(5) %}
-                        <div id="dice-{{ i }}" class="dice"></div>
+                {% for i in range(2) %}
+                    <div id="group-{{ i }}" class="dices">
+                    {% for j in range(5) %}
+                        <div id="dice-{{ j }}" class="dice" dots=0></div>
                     {% endfor %}
-                </div>
-                <div class="second dices">
-                    {% for i in range(5, 10) %}
-                        <div id="dice-{{ i }}" class="dice"></div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endfor %}
             </div>
             {{ render_profile('player', name) }}
         </div>
@@ -53,11 +50,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for combination in range(10) %}
+                    {% for combination in combinations %}
                         <tr>
                             <td>{{ combination }}</td>
-                            <td>1</td>
-                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -68,4 +65,5 @@
 
 {% block scripts %}
     <script src="{{ url_for('play.static', filename='js/index.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
 {% endblock %}

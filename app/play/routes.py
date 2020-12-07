@@ -1,5 +1,6 @@
-from app.play import play
 from flask import render_template, url_for, request, session, redirect
+from app.play import play
+from app.play.core.const import COMBINATIONS
 
 @play.route('/', methods=('GET', 'POST'))
 def home():
@@ -13,5 +14,6 @@ def home():
 def play_game():
     name = session.get('name')
     if name is not None:
-        return render_template('play.html', name=name)
+        return render_template('play.html', name=name, 
+            combinations=COMBINATIONS)
     return redirect(url_for('play.home'))

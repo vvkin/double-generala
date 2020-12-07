@@ -100,11 +100,10 @@
     background-color: rgb(34, 34, 182);
 }
 
-.dice-cup {
-    width: 6.5em;
+#dice-cup {
+    width: 9em;
     cursor: pointer;
     margin-left: auto;
-    transform: rotate(-45deg);
     padding: 0 1em;
 }
 
@@ -159,11 +158,11 @@ table tr:nth-of-type(even) { background-color: #f3f3f3; }
     height: 60%;
 }
 
-#dice-0, #dice-5 {grid-area: one;}
-#dice-1, #dice-6 {grid-area: three;}
-#dice-2, #dice-7 {grid-area: five;}
-#dice-3, #dice-8 {grid-area: seven;}
-#dice-4, #dice-9 {grid-area: nine;}
+#dice-0 {grid-area: one;}
+#dice-1 {grid-area: three;}
+#dice-2 {grid-area: five;}
+#dice-3 {grid-area: seven;}
+#dice-4 {grid-area: nine;}
 
 .dice {
 	display: grid;
