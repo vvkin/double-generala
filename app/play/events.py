@@ -19,7 +19,7 @@ def on_roll():
     game.update_prices()
     dices = list(game.dices)
     prices = list(game.prices)
-    emit('player dices', {'dices': dices, 'prices': prices})
+    emit('player roll', {'dices': dices, 'prices': prices})
 
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():

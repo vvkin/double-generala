@@ -11,9 +11,9 @@
             {{ render_profile('bot', 'bot') }}
             <div class="center">
                 {% for i in range(2) %}
-                    <div id="group-{{ i }}" class="dices">
+                    <div class="dices" order="{{ i }}">
                     {% for j in range(5) %}
-                        <div id="dice-{{ j }}" class="dice" dots=0></div>
+                        <div class="dice" order="{{ i * 5 + j }}"></div>
                     {% endfor %}
                     </div>
                 {% endfor %}

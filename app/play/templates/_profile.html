@@ -6,12 +6,12 @@
         </div>
         <div class="places">
             {%- for i in range(2) %}
-                <div class="row">
-                    <div class="number-{{ i }}">
-                        {% if i == 0 %} I {% else %} II {% endif %}
+                <div class="row" order="{{ i }}">
+                    <div class="number">
+                        {%- if i == 0 -%} I {%- else -%} II {%- endif -%}
                     </div>
                 {%- for j in range(5) %}
-                    <div id="{{ player }}-{{ (i == 1) * 5 + j }}" class="place"></div>
+                    <div class="place"></div>
                 {%- endfor %}
                 </div>
             {%- endfor %}
