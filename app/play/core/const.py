@@ -1,4 +1,4 @@
-COMBINATIONS = (
+COMBINATIONS = ( # all possible combinations
     'Ones',
     'Twos',
     'Threes',
@@ -11,10 +11,12 @@ COMBINATIONS = (
     'Five of a Kind'
 )
 
-COMBINATIONS_NUM = len(COMBINATIONS)
+USER, BOT = 0, 1 # just indices to distinguish a user from a bot
 
-COMBINATIONS_FILE = 'combinations.bin'
+COMBINATIONS_NUM = len(COMBINATIONS) # total number of combinations
 
-DICES = [1, 2, 3, 4, 5, 6]
+COMBINATIONS_FILE = 'combinations.bin' # file with scores for all combinations
 
-DICES_NUM = 10
+DICES = [1, 2, 3, 4, 5, 6] # possible values on dice sides
+
+DICES_NUM = 5 # dices in one group

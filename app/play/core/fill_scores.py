@@ -6,17 +6,17 @@ def get_scores(dices):
     unique_dices = set(dices)
 
     for dots in range(6): # fill ones, twos, threes, etc.
-        combinations[dots] = dices.count(dots) * dots
+        combinations[dots] = dices.count(dots + 1) * (dots + 1)
     
     if dices == (1, 2, 3, 4, 5): # small generala
-        combinations[7] = 21
+        combinations[6] = 21
     
     if dices == (2, 3, 4, 5, 6): # big generala
-        combinations[8] = 30
+        combinations[7] = 30
 
     if len(unique_dices) == 2: # full house
         if dices.count(dices[0]) in (2, 3):
-            combinations[9] = sum(dices)
+            combinations[8] = sum(dices)
     
     if len(unique_dices) == 1: # five of a kind
         combinations[9] = 50

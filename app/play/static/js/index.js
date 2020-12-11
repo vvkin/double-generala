@@ -1,37 +1,53 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const socket = io.connect('http://' + document.domain + ':' + location.port + '/play'); 
-    const diceCup = document.querySelector('#dice-cup');
-    const dices = document.querySelectorAll('.dice');
+const socket = io('http://' + document.domain + ':' + location.port + '/play'); 
+const diceWrappers = document.querySelectorAll('.dices');
+const dices = document.querySelectorAll('.dice');
+const diceCup = document.querySelector('#dice-cup');
+const USER = 0; const BOT = 1;
 
-    let rollNow = true;
-    let moveNow = true;
-
-    diceCup.addEventListener('click', () => {
-        if (rollNow) {
-            const firstGroup = 
-            socket.emit('roll dices');
-        }
-    });
-
-    dices.forEach(dice => {
-        dice.addEventListener('click', () => {
-            if (moveNow) {
-                placeDice('player', dice);
-            }
-        })
-    });
-
-    socket.on('fill dices', (dices) => {
-        animateRoll(dices);
-    });
-
-    socket.on('fill tables')
-
-    socket.on('bot roll', (dices) => {
-        fillBoard(dices);
-        rollNow = true;
-    });
+socket.on('connect', () => {
+    socket.emit('start game');
+    initActiveListeners();
 });
+
+socket.on('first turn', (player) => {
+    if (player === USER) {
+        diceCup.classList.remove('is-disabled');
+    }
+});
+
+socket.on('fill board', (data) => {
+    if (data.state.player === USER) {
+        animateRoll(data.board[0], 0);
+        setTimeout(animateRoll, 1200, data.board[1], 1)
+
+        if (!data.state.allowed) {
+            diceCup.classList.add('is-disabled');
+            toggleDices();
+        }
+    } else {
+        socket.emit('bot turn');
+    }
+});
+
+function initActiveListeners(state) {
+    diceCup.addEventListener('click', () => {
+        const onBoard = getOnBoard();
+        socket.emit('roll dices', onBoard);
+        toggleDices();
+    });
+
+    for (dice of dices) {
+        dice.addEventListener('click', () => {
+            placeDice('player', dice);
+        })
+    };
+}
+
+function toggleDices() {
+    for (let dice of dices) {
+        dice.classList.toggle('is-disabled');
+    }
+}
 
 function placeDice(movesNow, dice) {
     const diceOrder = dice.getAttribute('order');
@@ -49,10 +65,24 @@ function placeDice(movesNow, dice) {
     }
 }
 
-function animateRoll(dices) {
+function getOnBoard() {
+    const groups = [[], []];
+    let dots;
+
+    for (let dice of dices) {
+        dots = dice.children.length;
+        if (dots) {
+            groups[+dice.getAttribute('order') < 5].push(dots);
+        }
+    }
+
+    return groups
+}
+
+function animateRoll(group, groupIdx) {
     shakeCup();
-    fillDices(dices.slice(0, 5), 0);
-    fillDices(dices.slice(5, 10), 1);
+    fillDices(group[0], groupIdx);
+    fillTables(group[1], groupIdx);
 }
 
 function shakeCup() {
@@ -87,22 +117,16 @@ function addDots(element, dotsNumber) {
     }
 }
 
-function fillDices(diceValues, group_idx) {
-    const group = document.querySelectorAll('.dices')[group_idx];
-    const dices = group.children;
-    let dotsNumber = 0;
-
+function fillDices(dicesValues, groupIdx) {
+    const dices = diceWrappers[groupIdx].children;
     for (let i = 0; i < dices.length; ++i) {
-        dotsNumber = dices[i].children.length;
-        if (!dotsNumber) {
-            addDots(dices[i], diceValues[i] - dotsNumber);
-        }
+        addDots(dices[i], dicesValues[i] - dices[i].children.length);
     }
 }
 
-function fillTables(prices, group_idx) {
+function fillTables(scores, groupIdx) {
     const tableRows = document.querySelectorAll('.combinations tbody tr');
     for (let i = 0; i < tableRows.length; ++i) {
-        tableRows[i].children[group_idx + 1].innerHTML = prices[i];
+        tableRows[i].children[groupIdx + 1].innerHTML = scores[i];
     }
 }

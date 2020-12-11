@@ -190,3 +190,7 @@ table tr:nth-of-type(even) { background-color: #f3f3f3; }
 .dot:nth-child(5) {grid-area: e;}
 .dot:nth-child(6) {grid-area: f;}
 .dot:nth-child(odd):last-child {grid-area: g;}
+
+.is-disabled {
+    pointer-events: none;   
+}

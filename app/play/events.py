@@ -5,22 +5,28 @@ from app.play.core import Game
 
 @socketio.on('connect', namespace='/play')
 def on_connect():
-    name = session['name']
-    game = Game()
     user_id = request.sid
-    games[user_id] = game
     print(f'User with sid {user_id} connected!')
 
-@socketio.on('roll dices', namespace='/play')
-def on_roll():
-    dices = Game.roll_dices()
-    emit('fill dices', dices)
+@socketio.on('start game', namespace='/play')
+def on_start():
+    game = Game()
+    games[request.sid] = game
+    player = game.get_first_turn()
+    emit('first turn', player)
+    if player: game.roll_bot_dices()
 
-@socketio.on('get scores', namespace='/play')
-def on_scores(dices):
-    scores = Game.get_scores(dices)
-    emit('fill tables', scores)
-    
+@socketio.on('roll dices', namespace='/play')
+def on_roll(on_board):
+    game = games[request.sid]
+    board_state = (
+        game.get_group_state(on_board[0]),
+        game.get_group_state(on_board[1])
+    )
+    state = game.get_state()
+    data = {'board': board_state, 'state': state}
+    emit('fill board', data)
+
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():
     user_id = request.sid
