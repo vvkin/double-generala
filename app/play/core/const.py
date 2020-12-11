@@ -5,10 +5,16 @@ COMBINATIONS = (
     'Fours',
     'Fives',
     'Sixes',
-    'Straight',
+    'Small General',
+    'Big General',
     'Full House',
-    'Four of a Kind',
-    'Generala'
+    'Five of a Kind'
 )
 
 COMBINATIONS_NUM = len(COMBINATIONS)
+
+COMBINATIONS_FILE = 'combinations.bin'
+
+DICES = [1, 2, 3, 4, 5, 6]
+
+DICES_NUM = 10

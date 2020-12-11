@@ -2,11 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const socket = io.connect('http://' + document.domain + ':' + location.port + '/play'); 
     const diceCup = document.querySelector('#dice-cup');
     const dices = document.querySelectorAll('.dice');
+
     let rollNow = true;
     let moveNow = true;
 
     diceCup.addEventListener('click', () => {
         if (rollNow) {
+            const firstGroup = 
             socket.emit('roll dices');
         }
     });
@@ -19,11 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     });
 
-    socket.on('player roll', (data) => {
-        animateRoll(data.dices, data.prices, 0);
-        setTimeout(animateRoll, 1200, data.dices, data.prices, 1);
-        rollNow = false;
+    socket.on('fill dices', (dices) => {
+        animateRoll(dices);
     });
+
+    socket.on('fill tables')
 
     socket.on('bot roll', (dices) => {
         fillBoard(dices);
@@ -47,12 +49,10 @@ function placeDice(movesNow, dice) {
     }
 }
 
-function animateRoll(dices, prices, group_idx) {
-    const toFillDices = dices.slice(5*group_idx, 5+group_idx*5);
-    const toFillPrices = prices.slice(10*group_idx, 10+group_idx*10);
+function animateRoll(dices) {
     shakeCup();
-    fillDices(toFillDices, group_idx);
-    fillTables(toFillPrices, group_idx);
+    fillDices(dices.slice(0, 5), 0);
+    fillDices(dices.slice(5, 10), 1);
 }
 
 function shakeCup() {
@@ -77,7 +77,9 @@ function clearDots() {
 }
 
 function addDots(element, dotsNumber) {
+    element.style.display = 'grid';
     let dot;
+    
     for (let i = 0; i < dotsNumber; ++i) {
         dot = document.createElement('span');
         dot.classList.add('dot');
@@ -86,11 +88,15 @@ function addDots(element, dotsNumber) {
 }
 
 function fillDices(diceValues, group_idx) {
-    const group = document.querySelector(`.dices[order="${group_idx}"]`);
+    const group = document.querySelectorAll('.dices')[group_idx];
     const dices = group.children;
+    let dotsNumber = 0;
 
     for (let i = 0; i < dices.length; ++i) {
-        addDots(dices[i], diceValues[i] - dices[i].children.length);
+        dotsNumber = dices[i].children.length;
+        if (!dotsNumber) {
+            addDots(dices[i], diceValues[i] - dotsNumber);
+        }
     }
 }
 

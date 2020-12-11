@@ -6,7 +6,7 @@
         </div>
         <div class="places">
             {%- for i in range(2) %}
-                <div class="row" order="{{ i }}">
+                <div class="row-{{ i }}">
                     <div class="number">
                         {%- if i == 0 -%} I {%- else -%} II {%- endif -%}
                     </div>

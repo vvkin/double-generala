@@ -1,26 +1,26 @@
 from flask import session, request
 from flask_socketio import emit, send, disconnect
 from app import socketio, games
-from app.play.core import Generala
+from app.play.core import Game
 
 @socketio.on('connect', namespace='/play')
 def on_connect():
     name = session['name']
-    game = Generala()
+    game = Game()
     user_id = request.sid
     games[user_id] = game
     print(f'User with sid {user_id} connected!')
 
 @socketio.on('roll dices', namespace='/play')
 def on_roll():
-    user_id = request.sid
-    game = games[user_id]
-    game.roll_dices()
-    game.update_prices()
-    dices = list(game.dices)
-    prices = list(game.prices)
-    emit('player roll', {'dices': dices, 'prices': prices})
+    dices = Game.roll_dices()
+    emit('fill dices', dices)
 
+@socketio.on('get scores', namespace='/play')
+def on_scores(dices):
+    scores = Game.get_scores(dices)
+    emit('fill tables', scores)
+    
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():
     user_id = request.sid

@@ -1,3 +1,3 @@
-from .generala import Generala
+from .game import Game
 
-__all__ = ['Generala']
+__all__ = ['Game']

@@ -66,7 +66,7 @@
     max-height: 7em;
 }
 
-.row {
+.row-0, .row-1 {
     display: flex;
 }
 
@@ -92,11 +92,11 @@
     cursor: pointer;
 }
 
-.row[order="0"] .number {
+.row-0 .number {
     background-color: rgb(194, 31, 31);
 }
 
-.row[order="1"] .number {
+.row-1 .number {
     background-color: rgb(34, 34, 182);
 }
 
@@ -165,7 +165,7 @@ table tr:nth-of-type(even) { background-color: #f3f3f3; }
 .dice[order="4"], .dice[order="9"] {grid-area: nine;}
 
 .dice {
-	display: grid;
+	display: none;
 	grid-template-areas:
 		"a . c"
 		"e g f"
