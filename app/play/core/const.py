@@ -15,7 +15,7 @@ USER, BOT = 0, 1 # just indices to distinguish a user from a bot
 
 COMBINATIONS_NUM = len(COMBINATIONS) # total number of combinations
 
-COMBINATIONS_FILE = 'combinations.bin' # file with scores for all combinations
+COMBINATIONS_FILE = 'app/play/core/combinations.bin' # file with scores for all combinations
 
 DICES = [1, 2, 3, 4, 5, 6] # possible values on dice sides
 

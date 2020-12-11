@@ -1,3 +1,5 @@
+'use strict';
+
 const socket = io('http://' + document.domain + ':' + location.port + '/play'); 
 const diceWrappers = document.querySelectorAll('.dices');
 const dices = document.querySelectorAll('.dice');
@@ -36,11 +38,11 @@ function initActiveListeners(state) {
         toggleDices();
     });
 
-    for (dice of dices) {
+    dices.forEach(dice => {
         dice.addEventListener('click', () => {
             placeDice('player', dice);
         })
-    };
+    });
 }
 
 function toggleDices() {
@@ -66,13 +68,13 @@ function placeDice(movesNow, dice) {
 }
 
 function getOnBoard() {
-    const groups = [[], []];
-    let dots;
+    const groups = [[], []]
+    let dots; let diceOrder;
 
     for (let dice of dices) {
-        dots = dice.children.length;
-        if (dots) {
-            groups[+dice.getAttribute('order') < 5].push(dots);
+        if (dots = dice.children.length) {
+            diceOrder = +dice.getAttribute('order');
+            groups[+(diceOrder > 4)].push(dots);
         }
     }
 
