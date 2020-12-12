@@ -56,7 +56,7 @@
     font-weight: bold;
 }
 
-.player-area {
+#player, #bot {
     display: flex;
     align-items: flex-end;
     max-height: 6.8em;

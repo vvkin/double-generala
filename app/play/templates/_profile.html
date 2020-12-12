@@ -1,5 +1,5 @@
 {% macro render_profile(player, player_name) %}
-    <div class="{{ player }} player-area">
+    <div id="{{ player }}">
         <div class="profile">
             <img src = "{{ url_for('play.static', filename='img/' + player + '.png') }}" title="{{ player }}"/>
             <span>{{ player_name }}</span>
