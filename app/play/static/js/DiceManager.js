@@ -55,7 +55,7 @@ export default class DiceManager {
 
     showDicesGroup(diceValues, groupIdx) {
         const dices = this.diceWrappers[groupIdx].children;
-        for (let i = 0; i < DICES_NUM; ++i) {
+        for (let i = 0; i < dices.length; ++i) {
             this.showDice(dices[i], diceValues[i] - dices[i].children.length);
         }
     }

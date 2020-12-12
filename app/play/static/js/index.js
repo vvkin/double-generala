@@ -2,17 +2,12 @@
 
 import {USER, BOT} from './DiceManager.js';
 import DiceManager from './DiceManager.js';
+import TableManger from './TableManager.js';
 
 const socket = io('http://' + document.domain + ':' + location.port + '/play'); 
 const diceManager = new DiceManager();
+const tableManager = new TableManger();
 const diceCup = document.querySelector('#dice-cup');
-const tableColumns = [
-    document.querySelectorAll('td.scores:nth-child(2)'),
-    document.querySelectorAll('td.scores:nth-child(3)')
-];
-const resultsTable = document.querySelector('.results tbody');
-let round = 1;
-let boardIsReady = false;
 
 socket.on('connect', () => {
     socket.emit('start game');
@@ -31,7 +26,7 @@ socket.on('fill board', async (data) => {
         await animateRoll(data.board[0], 0);
         await sleep(1000);
         await animateRoll(data.board[1], 1);
-        boardIsReady = true;
+        tableManager.setEnabled(true);
         
         if (!data.state.allowed) {
             diceCup.classList.add('is-disabled');
@@ -42,16 +37,16 @@ socket.on('fill board', async (data) => {
 });
 
 socket.on('end round', (data) => {
-    tableColumns[data.group][data.move]
-        .classList.add('active-td');
-    fillTotalScore(data.score);
-    prepareToNewRound();
+    tableManager.toggleCell(data.group, data.move);
+    tableManager.setTotalScore(data.score);
+    tableManager.setNewRound();
+    tableManager.clearScores();
+    diceManager.hideAllDices(USER);
 });
 
 socket.on('show move', (data) => {
-    tableColumns[data.group][data.move]
-        .classList.add('active-td');
-    fillTotalScore(data.score);
+    tableManager.toggleCell(data.group, data.move);
+    tableManager.setTotalScore(data.score);
 });
 
 async function sleep(ms) {
@@ -73,7 +68,7 @@ function initActiveListeners() {
     
     document.querySelectorAll('.scores').forEach(cell => {
         cell.addEventListener('click', () => {
-            if (boardIsReady){
+            if (tableManager.enabled){
                 const data = {
                     'group': +cell.getAttribute('group'),
                     'move': +cell.getAttribute('order'),
@@ -85,17 +80,10 @@ function initActiveListeners() {
     });
 }
 
-
-function prepareToNewRound() {
-    diceManager.hideAllDices(USER);
-    ++round;
-    boardIsReady = false;
-}
-
 async function animateRoll(group, groupIdx) {
     shakeCup();
     diceManager.showDicesGroup(group[0], groupIdx);
-    fillTables(group[1], groupIdx);
+    tableManager.setScores(group[1], groupIdx);
 }
 
 function shakeCup() {
@@ -106,20 +94,4 @@ function shakeCup() {
         duration: 130,
         iterations: 5
     });
-}
-
-function fillTables(scores, groupIdx) {
-    let currentCell;
-    for (let i = 0; i < tableColumns[0].length; ++i) {
-        currentCell = tableColumns[groupIdx][i];
-        if (!currentCell.classList.contains('active-td')) {
-            currentCell.innerHTML = scores[i];
-        }
-    }
-}
-
-function fillTotalScore(score) {
-    const tableRow = resultsTable.children[USER];
-    const cell =  tableRow.children[round];
-    cell.innerHTML = +cell.innerHTML + score;
 }
