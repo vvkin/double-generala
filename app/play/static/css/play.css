@@ -143,12 +143,12 @@ table tr:nth-of-type(even) { background-color: #f3f3f3; }
 .combinations td { padding: 0.7em 2.5em;}
 .combinations td:not(:first-child) {cursor: pointer;}
 .combinations td:not(:first-child):hover {color: white; text-decoration: underline;}
-.combinations td:nth-child(2):hover {background-color: rgb(194, 31, 31);}
-.combinations td:nth-child(3):hover {background-color: rgb(34, 34, 182);}
+.combinations td:nth-child(2):hover, td.active-td:nth-child(2) {background-color: rgb(194, 31, 31);}
+.combinations td:nth-child(3):hover, td.active-td:nth-child(3)  {background-color: rgb(34, 34, 182);}
 
 .dices {
     display: grid;
-    grid-template-areas: 
+    grid-template-areas:
         "one two three"
         "four five six"
         "seven eight nine";

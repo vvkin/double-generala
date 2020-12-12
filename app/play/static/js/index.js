@@ -4,7 +4,15 @@ const socket = io('http://' + document.domain + ':' + location.port + '/play');
 const diceWrappers = document.querySelectorAll('.dices');
 const dices = document.querySelectorAll('.dice');
 const diceCup = document.querySelector('#dice-cup');
+const tableColumns = [
+    document.querySelectorAll('td.scores:nth-child(2)'),
+    document.querySelectorAll('td.scores:nth-child(3)')
+];
+const resultsTable = document.querySelector('.results tbody');
+
 const USER = 0; const BOT = 1;
+let round = 1;
+let boardIsReady = false;
 
 socket.on('connect', () => {
     socket.emit('start game');
@@ -14,34 +22,66 @@ socket.on('connect', () => {
 socket.on('first turn', (player) => {
     if (player === USER) {
         diceCup.classList.remove('is-disabled');
+        toggleDices();
     }
 });
 
-socket.on('fill board', (data) => {
+socket.on('fill board', async (data) => {
     if (data.state.player === USER) {
-        animateRoll(data.board[0], 0);
-        setTimeout(animateRoll, 1200, data.board[1], 1)
-
+        await animateRoll(data.board[0], 0);
+        await sleep(1000);
+        await animateRoll(data.board[1], 1);
+        boardIsReady = true;
+        
         if (!data.state.allowed) {
             diceCup.classList.add('is-disabled');
-            toggleDices();
         }
     } else {
         socket.emit('bot turn');
     }
 });
 
+socket.on('end round', (data) => {
+    tableColumns[data.group][data.move]
+        .classList.add('active-td');
+    fillTotalScore(data.score);
+    prepareToNewRound();
+});
+
+socket.on('show move', (data) => {
+    tableColumns[data.group][data.move]
+        .classList.add('active-td');
+    fillTotalScore(data.score);
+});
+
+async function sleep(ms) {
+    return new Promise(resolved => setTimeout(resolved, ms));
+}
+
 function initActiveListeners(state) {
     diceCup.addEventListener('click', () => {
+        clearDices(); 
         const onBoard = getOnBoard();
         socket.emit('roll dices', onBoard);
-        toggleDices();
     });
 
     dices.forEach(dice => {
         dice.addEventListener('click', () => {
             placeDice('player', dice);
-        })
+        });
+    });
+    
+    document.querySelectorAll('.scores').forEach(cell => {
+        cell.addEventListener('click', () => {
+            if (boardIsReady){
+                const data = {
+                    'group': +cell.getAttribute('group'),
+                    'move': +cell.getAttribute('order'),
+                    'score': +cell.innerHTML
+                }
+                socket.emit('player move', data);
+            }
+        });
     });
 }
 
@@ -68,7 +108,7 @@ function placeDice(movesNow, dice) {
 }
 
 function getOnBoard() {
-    const groups = [[], []]
+    const groups = [[], []];
     let dots; let diceOrder;
 
     for (let dice of dices) {
@@ -78,10 +118,42 @@ function getOnBoard() {
         }
     }
 
-    return groups
+    return groups;
 }
 
-function animateRoll(group, groupIdx) {
+function removeAllChildren(element){
+    let lastChild;
+    while (lastChild = element.lastChild) {
+        element.removeChild(lastChild);
+    }
+}
+
+function clearDices() {
+    for (let group of diceWrappers) {
+        for (let dice of group.children) {
+            dice.style.display = 'none';
+            removeAllChildren(dice);
+        }
+    }
+}
+
+function prepareToNewRound() {
+    ++round;
+    clearBoard('player');
+    boardIsReady = false;
+}
+
+function clearBoard(player) {
+    for (let dice of dices) {
+        if (!dice.parentElement.classList.contains('dices')) {
+            placeDice(player, dice);
+        }
+        removeAllChildren(dice);
+        dice.style.display = 'none';
+    }
+}
+
+async function animateRoll(group, groupIdx) {
     shakeCup();
     fillDices(group[0], groupIdx);
     fillTables(group[1], groupIdx);
@@ -127,8 +199,17 @@ function fillDices(dicesValues, groupIdx) {
 }
 
 function fillTables(scores, groupIdx) {
-    const tableRows = document.querySelectorAll('.combinations tbody tr');
-    for (let i = 0; i < tableRows.length; ++i) {
-        tableRows[i].children[groupIdx + 1].innerHTML = scores[i];
+    let currentCell;
+    for (let i = 0; i < tableColumns[0].length; ++i) {
+        currentCell = tableColumns[groupIdx][i];
+        if (!currentCell.classList.contains('active-td')) {
+            currentCell.innerHTML = scores[i];
+        }
     }
+}
+
+function fillTotalScore(score) {
+    const tableRow = resultsTable.children[USER];
+    const cell =  tableRow.children[round];
+    cell.innerHTML = +cell.innerHTML + score;
 }

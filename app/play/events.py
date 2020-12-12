@@ -27,6 +27,21 @@ def on_roll(on_board):
     data = {'board': board_state, 'state': state}
     emit('fill board', data)
 
+@socketio.on('player move', namespace='/play')
+def on_turn(data):
+    game = games[request.sid]
+    move = data['move']
+    score = data['score']
+    group = data['group']
+
+    if game.is_valid_move(group, move):
+        game.set_move(group, move, score)
+    
+        if game.is_round_end():
+            game.update_state()
+            emit('end round', data)
+        else: emit('show move', data)
+
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():
     user_id = request.sid
