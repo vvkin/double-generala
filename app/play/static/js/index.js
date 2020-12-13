@@ -17,7 +17,7 @@ socket.on('connect', () => {
 socket.on('first turn', (player) => {
     if (player === USER) {
         diceCup.classList.remove('is-disabled');
-        diceManager.toggleDices();
+        diceManager.setEnabled(true);
     }
 });
 
@@ -30,8 +30,10 @@ socket.on('fill board', async (data) => {
             diceCup.classList.add('is-disabled');
         }
     } else {
+        console.log('BOT EMIT');
+        diceManager.setEnabled(false);
         animateBotRound(data.dices);
-        //socket.emit('bot turn');
+        socket.emit('bot turn');
     }
 });
 
@@ -46,6 +48,11 @@ socket.on('show move', (data) => {
         tableManager.clearScores();
         socket.emit('bot roll');
     }
+});
+
+socket.on('bot move', (moves) => {
+    diceManager.setBotMove(moves[0], 0);
+    diceManager.setBotMove(moves[1], 1);
 });
 
 socket.on('game over', (winner) => {

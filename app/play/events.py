@@ -2,6 +2,7 @@ from flask import session, request
 from flask_socketio import emit, send, disconnect
 from app import socketio, games
 from app.play.core import Game
+import time
 
 @socketio.on('connect', namespace='/play')
 def on_connect():
@@ -52,13 +53,16 @@ def on_bot_roll():
     roll_bot_dices(request.sid)
     
 @socketio.on('bot turn', namespace='/play')
-def on_bot():
+def on_bot_turn():
+    start = time.time()
     game = games[request.sid]
-    move = game.get_bot_move()
-    print('===============')
-    print(move)
-    print('===============')
-  
+    moves = [
+        game.get_bot_move(0),
+        game.get_bot_move(1)
+    ]
+    print(time.time() - start)
+    emit('bot move', moves)
+
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():
     user_id = request.sid

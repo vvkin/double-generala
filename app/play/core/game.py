@@ -70,8 +70,8 @@ class Game:
     def is_round_end(self) -> bool:
         return self.moves[0] and self.moves[1]
     
-    def get_bot_move(self) -> Tuple[int]:
-        return self.bot.get_move()
+    def get_bot_move(self, group: int) -> Tuple[int]:
+        return self.bot.get_move(group)
 
     def set_move(self, group: int, move: int, score: int) -> None:
         self.moves[group] = True
@@ -140,9 +140,9 @@ class GeneralaBot:
         self.on_board = [[], []]
         self.rand_dices = [[], []]
     
-    def get_move(self, group_idx: int) -> Tuple[int]:
-        dices = self.on_board[group_idx]
-        dices.extend(self.rand_dices[group_idx])
+    def get_move(self, group: int) -> Tuple[int]:
+        dices = self.on_board[group]
+        dices.extend(self.rand_dices[group])
         return self.ai(dices, 2)
     
     def roll_dices(self, group: int) -> None:

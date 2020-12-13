@@ -10,13 +10,38 @@ export default class DiceManager {
         this.dices = document.querySelectorAll('.dice');
         this.places = [
             document.querySelectorAll('#player .place'),
-            document.querySelectorAll('#bot', '.place')
+            document.querySelectorAll('#bot .place')
         ]
     }
 
-    toggleDices() {
+    setBotMove(diceValues, groupIdx) {
+        let order; let index;
+
+        console.log(diceValues);
+        
         for (let dice of this.dices) {
-            dice.classList.toggle('is-disabled');
+            order = +dice.getAttribute('order');
+
+            if (+(order > 4) == groupIdx) {
+                index = diceValues.indexOf(dice.children.length);
+
+                if (index !== -1) {
+                    diceValues.splice(index, 1);
+                    if (dice.parentElement.classList.contains('dices')) {
+                        this.moveDice(BOT, dice);
+                    }
+                } 
+            }
+        }
+    }
+
+    setEnabled(enabled) {
+        for (let dice of this.dices) {
+            if (enabled) {
+                dice.classList.remove('is-disabled');
+            } else {
+                dice.classList.add('is-disabled');
+            }
         }
     }
 
