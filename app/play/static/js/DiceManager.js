@@ -65,6 +65,22 @@ export default class DiceManager {
         this.removeAllChildren(dice);
     }
 
+    hideDicesGroup(playerIdx, groupIdx) {
+        const player = (playerIdx) ? 'bot' : 'player';
+        const row = document.querySelector(`#${player} .row-${groupIdx}`);
+
+        for (let element of row.children) {
+            if (element.classList.contains('dice')) {
+                this.moveDice(playerIdx, element);
+            }
+        }
+
+        for (let dice of this.diceWrappers[groupIdx].children){
+            this.hideDice(dice);
+        }
+
+    }
+    
     hideUnusedDices() {
        for (let diceGroup of this.diceWrappers) {
            for (let dice of diceGroup.children) {
@@ -74,13 +90,8 @@ export default class DiceManager {
     }
 
     hideAllDices(playerIdx) {
-        for (let dice of this.dices) {
-            if (!dice.parentElement.classList.contains('dices')) {
-                this.moveDice(playerIdx, dice);
-            }
-            this.removeAllChildren(dice);
-            dice.style.display = 'none';
-        }
+        this.hideDicesGroup(playerIdx, 0);
+        this.hideDicesGroup(playerIdx, 1);
     }
 
     getOnBoardDices() {

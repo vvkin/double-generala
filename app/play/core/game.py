@@ -28,6 +28,8 @@ class Game:
     
     def get_group_state(self, on_board: List[int]) -> Tuple[List[int], Tuple[int]]:
         self.move_idx += 1
+        if self.moves[self.move_idx & 1 ^ 1]:
+            return [], []
 
         count = DICES_NUM - len(on_board)
         rand_dices = get_random_dices(count)

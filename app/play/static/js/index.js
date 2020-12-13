@@ -23,9 +23,7 @@ socket.on('first turn', (player) => {
 
 socket.on('fill board', async (data) => {
     if (data.state.player === USER) {
-        await animateRoll(data.board[0], 0);
-        await sleep(1000);
-        await animateRoll(data.board[1], 1);
+        await animateRound(data.board);
         tableManager.setEnabled(true);
         
         if (!data.state.allowed) {
@@ -36,17 +34,16 @@ socket.on('fill board', async (data) => {
     }
 });
 
-socket.on('end round', (data) => {
-    tableManager.toggleCell(data.group, data.move);
-    tableManager.setTotalScore(data.score);
-    tableManager.setNewRound();
-    tableManager.clearScores();
-    diceManager.hideAllDices(USER);
-});
-
 socket.on('show move', (data) => {
     tableManager.toggleCell(data.group, data.move);
     tableManager.setTotalScore(data.score);
+    diceManager.hideDicesGroup(USER, data.group);
+
+    if (data.end) {
+        diceCup.classList.add('is-disabled');
+        tableManager.setNewRound();
+        tableManager.clearScores();
+    }
 });
 
 async function sleep(ms) {
@@ -84,6 +81,15 @@ async function animateRoll(group, groupIdx) {
     shakeCup();
     diceManager.showDicesGroup(group[0], groupIdx);
     tableManager.setScores(group[1], groupIdx);
+}
+
+async function animateRound(board) {
+    for (let i = 0; i < 2; ++i){
+        if (board[i][0].length) { // there are dices
+            await animateRoll(board[i], i);
+            (!i) && await sleep(1000);
+        }
+    }
 }
 
 function shakeCup() {

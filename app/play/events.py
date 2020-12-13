@@ -35,12 +35,14 @@ def on_turn(data):
     group = data['group']
 
     if game.is_valid_move(group, move):
+        data['end'] = False
         game.set_move(group, move, score)
     
         if game.is_round_end():
             game.update_state()
-            emit('end round', data)
-        else: emit('show move', data)
+            data['end'] = True
+        
+        emit('show move', data)
 
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():
