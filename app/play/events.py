@@ -41,9 +41,12 @@ def on_turn(data):
         if game.is_round_end():
             game.update_state()
             data['end'] = True
-        
+
         emit('show move', data)
 
+        if game.is_game_end(): 
+            emit('game over', game.winner)
+  
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():
     user_id = request.sid

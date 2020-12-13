@@ -4,6 +4,7 @@ export default class TableManager {
     constructor() {
         this.enabled = false;
         this.round = 1;
+        this.resultsLen = 7;
         this.length = 10;
         this.tableColumns = [
             document.querySelectorAll('td.scores:nth-child(2)'),
@@ -49,5 +50,15 @@ export default class TableManager {
         const tableRow = this.resultsTable.children[0];
         const cell = tableRow.children[this.round];
         cell.innerHTML = +cell.innerHTML + score;
+    }
+    
+    markWinner(winner) {
+        this.resultsTable.children[winner]
+            .children[this.resultsLen - 1]
+            .style.backgroundColor = '#228B22'; // green
+
+        this.resultsTable.children[+(!winner)]
+            .children[this.resultsLen - 1]
+            .style.backgroundColor = '#C21F1F'; // red
     }
 }

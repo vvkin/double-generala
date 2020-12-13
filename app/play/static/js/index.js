@@ -46,6 +46,13 @@ socket.on('show move', (data) => {
     }
 });
 
+socket.on('game over', (winner) => {
+    diceCup.classList.add('is-disabled');
+    diceManager.hideAllDices();
+    tableManager.markWinner(winner);
+    tableManager.setEnabled(false);
+});
+
 async function sleep(ms) {
     return new Promise(resolved => setTimeout(resolved, ms));
 }
