@@ -30,7 +30,8 @@ socket.on('fill board', async (data) => {
             diceCup.classList.add('is-disabled');
         }
     } else {
-        socket.emit('bot turn');
+        animateBotRound(data.dices);
+        //socket.emit('bot turn');
     }
 });
 
@@ -43,6 +44,7 @@ socket.on('show move', (data) => {
         diceCup.classList.add('is-disabled');
         tableManager.setNewRound();
         tableManager.clearScores();
+        socket.emit('bot roll');
     }
 });
 
@@ -88,6 +90,20 @@ async function animateRoll(group, groupIdx) {
     shakeCup();
     diceManager.showDicesGroup(group[0], groupIdx);
     tableManager.setScores(group[1], groupIdx);
+}
+
+async function animateBotRoll(dices, groupIdx) {
+    shakeCup();
+    diceManager.showDicesGroup(dices, groupIdx);
+}
+
+async function animateBotRound(dices) {
+    for (let i = 0; i < 2; ++i) {
+        if (dices[i].length) {
+            await animateBotRoll(dices[i], i);
+            (!i) && await sleep(1000);
+        }
+    }
 }
 
 async function animateRound(board) {

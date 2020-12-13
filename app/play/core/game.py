@@ -8,7 +8,7 @@ from .const import (
     COMBINATIONS_NUM,
     ALL_SCORES_FILE, ALL_MOVES_FILE,
 )
-from .utils import get_random_dices
+from .utils import get_random_dices, back_moves
 
 
 class Game:
@@ -20,26 +20,35 @@ class Game:
         self.used_mask = np.zeros(COMBINATIONS_NUM, np.bool)
         self.bot = GeneralaBot()
         self.winner = None
+        self.moves_now = None
 
         self.moves_num = 6 # 3 roll for each group
         self.move_idx = 0
         self.allowed = True
         self.moves = np.zeros(2, np.bool)
-
+    
     def get_first_turn(self) -> int:
-        return random.choice([USER, BOT])
+        choice = random.choice([USER, BOT])
+        self.moves_now = choice
+        return choice
     
     def get_group_state(self, on_board: List[int]) -> Tuple[List[int], Tuple[int]]:
         self.move_idx += 1
+        self.moves_now = USER
         if self.moves[self.move_idx & 1 ^ 1]:
             return [], []
 
         count = DICES_NUM - len(on_board)
         rand_dices = get_random_dices(count)
         dices = sorted(rand_dices + on_board)
-        scores = Game.get_score(dices)
+        scores = Game.all_scores[tuple(dices)]
 
         return rand_dices, scores
+    
+    def get_bot_dices(self, group: int) -> List[int]:
+        self.moves_now = BOT
+        self.bot.roll_dices(group)
+        return self.bot.get_group_dices(group)
     
     def update_state(self) -> None:
         self.move_idx = 0
@@ -50,7 +59,7 @@ class Game:
 
     def get_state(self) -> Dict[str, int or bool]:
         self.allowed = (self.move_idx < self.moves_num)
-        return {'allowed':  self.allowed, 'player': USER}
+        return {'allowed':  self.allowed, 'player': self.moves_now}
     
     def is_valid_move(self, group: int, move: int) -> bool:
         return (
@@ -61,6 +70,9 @@ class Game:
     def is_round_end(self) -> bool:
         return self.moves[0] and self.moves[1]
     
+    def get_bot_move(self) -> Tuple[int]:
+        return self.bot.get_move()
+
     def set_move(self, group: int, move: int, score: int) -> None:
         self.moves[group] = True
         self.used_mask[move] = True
@@ -74,34 +86,44 @@ class Game:
 
     @staticmethod
     def get_score(dices: List[int]) -> Tuple[int]:
-        return Game.all_scores[tuple(dices)]
+        return max(Game.all_scores[tuple(sorted(dices))])
+    
+    @staticmethod
+    def estimate_move(moves: List[Tuple[List[int], float]]) -> float:
+        estimation = 0
+        for [dices, prob] in moves:
+            score = Game.get_score(dices)
+            estimation += prob * score
+        return estimation
 
 class AI:
     def __init__(self) -> None:
         self.dices_num = 5
+        self.empty = Game.estimate_move(Game.all_moves[5])
     
     def __call__(self, dices: List[int], max_depth: int) -> Tuple[int]:
         self.best_move = tuple(dices)
-        self.eps = 0.2 if max_depth > 1 else 0 # gambling coefficient
+        self.eps = 0.1 if max_depth > 1 else 0 # gambling coefficient
         self.seek_move(dices, 0, max_depth)
         return self.best_move
     
     def seek_move(self, dices: List[int], depth: int, max_depth: int = 2) -> float:
         if depth == max_depth: return Game.get_score(dices)
 
-        max_value = -np.inf
+        max_value = float('-inf')
 
         for move in back_moves(dices): # moves after return [0, n] dices
             dice_count = self.dices_num - len(move)
+            heuristic = 0
 
             if not move: # make new roll
                 heuristic = self.empty
             elif not dice_count: # choose current board state
-                heuristic = (1 + (max_depth - depth) * self.eps) * Game.get_score(move)
+                heuristic = Game.get_score(move)
             else: # estimate random moves
                 for combs, chance in Game.all_moves[dice_count]:
                     current_dices = move + combs
-                    heuristic += change * seek_move(current_dices, depth+1)
+                    heuristic += chance * self.seek_move(current_dices, depth+1)
             
             if heuristic > max_value:
                 max_value = heuristic
@@ -110,4 +132,23 @@ class AI:
         return max_value
 
 class GeneralaBot:
-    pass
+    def __init__(self) -> None:
+        self.update()
+        self.ai = AI()
+    
+    def update(self):
+        self.on_board = [[], []]
+        self.rand_dices = [[], []]
+    
+    def get_move(self, group_idx: int) -> Tuple[int]:
+        dices = self.on_board[group_idx]
+        dices.extend(self.rand_dices[group_idx])
+        return self.ai(dices, 2)
+    
+    def roll_dices(self, group: int) -> None:
+        dices_num = DICES_NUM - len(self.on_board[group])
+        self.rand_dices[group] = get_random_dices(dices_num)
+    
+    def get_group_dices(self, group: int) -> List[int]:
+        return self.on_board[group] + self.rand_dices[group]
+        
