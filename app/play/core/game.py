@@ -66,8 +66,6 @@ class Game:
         self.bot.update()
         self.round += 1
         if self.round == 10: self.set_winner()
-        print(self.round)
-        print(f'USER {self.results[USER]} BOT {self.results[BOT]}')
        
     def is_game_end(self) -> bool:
         return not (self.winner is None)
@@ -107,7 +105,12 @@ class Game:
         else:
             best_move = self.bot.ai(values, 2)
             self.bot.on_board[group] = list(best_move)
-            self.bot.last[group] = len(best_move) == DICES_NUM
+            if len(best_move) == DICES_NUM:
+                result = self.bot.ai.get_score_and_idx(best_move)
+                self.scores[group] = result[1]
+                self.bot.ai.mark_as_used(result[0])
+                self.bot.last[group] = True
+
         return best_move
     
     def get_bot_score(self) -> int:
@@ -158,7 +161,6 @@ class AI:
     
     def __call__(self, dices: List[int], max_depth: int) -> Tuple[int]:
         self.best_move = tuple(dices)
-        self.eps = 0.1 if max_depth > 1 else 0 # gambling coefficient
         self.seek_move(dices, 0, max_depth)
         return self.best_move
     
