@@ -30,16 +30,15 @@ socket.on('fill board', async (data) => {
             diceCup.classList.add('is-disabled');
         }
     } else {
-        console.log('BOT EMIT');
         diceManager.setEnabled(false);
-        animateBotRound(data.dices);
+        await animateBotRound(data.dices);
         socket.emit('bot turn');
     }
 });
 
-socket.on('show move', (data) => {
+socket.on('show move', async (data) => {
     tableManager.toggleCell(data.group, data.move);
-    tableManager.setTotalScore(data.score);
+    tableManager.setTotalScore(data.score, USER);
     diceManager.hideDicesGroup(USER, data.group);
 
     if (data.end) {
@@ -50,9 +49,24 @@ socket.on('show move', (data) => {
     }
 });
 
-socket.on('bot move', (moves) => {
-    diceManager.setBotMove(moves[0], 0);
-    diceManager.setBotMove(moves[1], 1);
+socket.on('bot move', async (data) => {
+    for (let i = 0; i < data.moves.length; ++i) {
+        await diceManager.setBotMove(data.moves[i], i);
+        await sleep(500);
+        if (data.state[i].last) {
+            tableManager.setTotalScore(data.state[i].score, BOT);
+            diceManager.hideDicesGroup(BOT, i);
+        }
+    }
+    await diceManager.hideUnusedDices();
+    socket.emit('bot roll');
+});
+
+socket.on('bot done', async (score) => {
+    tableManager.setTotalScore(score, BOT);
+    diceCup.classList.remove('is-disabled');
+    tableManager.setNewRound();
+    diceManager.setEnabled(true);
 });
 
 socket.on('game over', (winner) => {

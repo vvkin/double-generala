@@ -46,13 +46,17 @@ class Game:
         return rand_dices, scores
     
     def get_bot_dices(self, group: int) -> List[int]:
-        self.moves_now = BOT
-        self.bot.roll_dices(group)
-        return self.bot.get_group_dices(group)
+        self.move_idx += 1
+        if self.bot.last[group]: return []
+        dices_count = DICES_NUM - len(self.bot.on_board[group])
+        self.bot.rand[group] = get_random_dices(dices_count)
+        return self.bot.rand[group]
     
     def update_state(self) -> None:
         self.move_idx = 0
         self.moves[:] = False
+        self.scores[:] = 0
+        self.bot.update()
     
     def is_game_end(self) -> bool:
         return not (self.winner is None)
@@ -71,7 +75,22 @@ class Game:
         return self.moves[0] and self.moves[1]
     
     def get_bot_move(self, group: int) -> Tuple[int]:
-        return self.bot.get_move(group)
+        values = self.bot.on_board[group] + self.bot.rand[group]
+        moves = (self.moves_num - self.move_idx) // 2
+        best_move = self.bot.ai(values, moves)
+
+        if len(best_move) == DICES_NUM:
+            self.scores[group] = Game.get_score(values)
+            self.bot.last[group] = True
+            return []
+        
+        return best_move
+
+    def get_bot_state(self, group: int) -> Dict[str, int or bool]:
+        return {'last': self.bot.last[group], 'score': self.scores[group]}
+
+    def is_bot_end(self) -> bool:
+        return self.bot.last[0] and self.bot.last[1]
 
     def set_move(self, group: int, move: int, score: int) -> None:
         self.moves[group] = True
@@ -137,18 +156,11 @@ class GeneralaBot:
         self.ai = AI()
     
     def update(self):
+        self.last = [False, False]
         self.on_board = [[], []]
-        self.rand_dices = [[], []]
-    
-    def get_move(self, group: int) -> Tuple[int]:
-        dices = self.on_board[group]
-        dices.extend(self.rand_dices[group])
-        return self.ai(dices, 2)
-    
+        self.rand = [[], []]
+            
     def roll_dices(self, group: int) -> None:
-        dices_num = DICES_NUM - len(self.on_board[group])
-        self.rand_dices[group] = get_random_dices(dices_num)
-    
-    def get_group_dices(self, group: int) -> List[int]:
-        return self.on_board[group] + self.rand_dices[group]
+        dices_count = DICES_NUM - len(self.on_board[group])
+        self.rand[group] = get_random_dices(dices_count)
         

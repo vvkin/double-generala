@@ -14,7 +14,8 @@ export default class DiceManager {
         ]
     }
 
-    setBotMove(diceValues, groupIdx) {
+    async setBotMove(diceValues, groupIdx) {
+        if (!diceValues.length) return;
         let order; let index;
 
         console.log(diceValues);
@@ -106,7 +107,7 @@ export default class DiceManager {
 
     }
     
-    hideUnusedDices() {
+    async hideUnusedDices() {
        for (let diceGroup of this.diceWrappers) {
            for (let dice of diceGroup.children) {
                this.hideDice(dice);

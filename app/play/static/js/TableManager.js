@@ -14,11 +14,11 @@ export default class TableManager {
     }
 
     setNewRound() {
-        ++this.round;
+        this.round += 0.5
         this.enabled = false;
     }
 
-    toggleCell(group, idx) {
+    async toggleCell(group, idx) {
         this.tableColumns[group][idx]
             .classList.toggle('active-td');
     }
@@ -37,7 +37,7 @@ export default class TableManager {
         }
     }
 
-    clearScores() {
+    async clearScores() {
         const cells = document.querySelectorAll('.scores');
         for (let cell of cells) {
             if (!cell.classList.contains('active-td')){
@@ -46,9 +46,9 @@ export default class TableManager {
         }
     }
 
-    setTotalScore(score) {
-        const tableRow = this.resultsTable.children[0];
-        const cell = tableRow.children[this.round];
+    setTotalScore(score, playerIdx) {
+        const tableRow = this.resultsTable.children[playerIdx];
+        const cell = tableRow.children[this.round >> 0];
         cell.innerHTML = +cell.innerHTML + score;
     }
     

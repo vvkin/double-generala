@@ -50,7 +50,11 @@ def on_turn(data):
 
 @socketio.on('bot roll', namespace='/play')
 def on_bot_roll():
-    roll_bot_dices(request.sid)
+    game = games[request.sid]
+    if game.is_bot_end():
+        game.update_state()
+        emit('bot done', sum(game.scores))
+    else: roll_bot_dices(request.sid)
     
 @socketio.on('bot turn', namespace='/play')
 def on_bot_turn():
@@ -60,8 +64,11 @@ def on_bot_turn():
         game.get_bot_move(0),
         game.get_bot_move(1)
     ]
-    print(time.time() - start)
-    emit('bot move', moves)
+    state = [
+        game.get_bot_state(0),
+        game.get_bot_state(1)
+    ]
+    emit('bot move', {'moves': moves, 'state': state})
 
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():
@@ -73,9 +80,12 @@ def on_disconnect():
 
 def roll_bot_dices(user_id: int):
     game = games[user_id]
-    dices = (
+    dices = [
         game.get_bot_dices(0),
         game.get_bot_dices(1)
-    )
-    state = game.get_state()
+    ]
+    state = [
+        game.get_bot_state(0),
+        game.get_bot_state(1)
+    ]
     emit('fill board', {'dices': dices, 'state' : state})
