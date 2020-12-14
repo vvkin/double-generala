@@ -16,6 +16,7 @@ class Game:
     all_moves = pickle.load(open(ALL_MOVES_FILE, 'rb'))
 
     def __init__(self):
+        self.results = np.zeros(2)
         self.scores = np.zeros(2)
         self.used_mask = np.zeros(COMBINATIONS_NUM, np.bool)
         self.bot = GeneralaBot()
@@ -47,17 +48,22 @@ class Game:
     
     def get_bot_dices(self, group: int) -> List[int]:
         self.move_idx += 1
+        self.moves_now = BOT
         if self.bot.last[group]: return []
+
         dices_count = DICES_NUM - len(self.bot.on_board[group])
         self.bot.rand[group] = get_random_dices(dices_count)
         return self.bot.rand[group]
     
     def update_state(self) -> None:
+        self.results[self.moves_now] += sum(self.scores)
         self.move_idx = 0
-        self.moves[:] = False
         self.scores[:] = 0
+        self.moves[:] = False
         self.bot.update()
-    
+
+        print(f'USER {self.results[USER]} BOT {self.results[BOT]}')
+       
     def is_game_end(self) -> bool:
         return not (self.winner is None)
 
@@ -77,14 +83,19 @@ class Game:
     def get_bot_move(self, group: int) -> Tuple[int]:
         values = self.bot.on_board[group] + self.bot.rand[group]
         moves = (self.moves_num - self.move_idx) // 2
-        best_move = self.bot.ai(values, moves)
-
-        if len(best_move) == DICES_NUM:
+        
+        if self.bot.last[group] or not moves:
+            best_move = values
             self.scores[group] = Game.get_score(values)
             self.bot.last[group] = True
-            return []
-        
+        else:
+            best_move = self.bot.ai(values, 2)
+            self.bot.on_board[group] = list(best_move)
+            self.bot.last[group] = len(best_move) == DICES_NUM
         return best_move
+    
+    def get_bot_score(self) -> int:
+        return self.results[BOT]
 
     def get_bot_state(self, group: int) -> Dict[str, int or bool]:
         return {'last': self.bot.last[group], 'score': self.scores[group]}
@@ -100,9 +111,6 @@ class Game:
         if self.move_idx == 2 and score == FIVE_OF_A_KIND:
             self.winner = USER
         
-    def roll_bot_dices(self) -> None:
-        pass
-
     @staticmethod
     def get_score(dices: List[int]) -> Tuple[int]:
         return max(Game.all_scores[tuple(sorted(dices))])

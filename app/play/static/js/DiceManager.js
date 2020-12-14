@@ -16,11 +16,30 @@ export default class DiceManager {
 
     async setBotMove(diceValues, groupIdx) {
         if (!diceValues.length) return;
-        let order; let index;
 
-        console.log(diceValues);
+        const dices = Array.from(this.dices).filter(dice => 
+            +(+dice.getAttribute('order') > 4) === groupIdx
+        );
+        let index;
+
+        //console.log(diceValues);
+
+        for (let dice of dices) {
+            index = diceValues.indexOf(dice.children.length);
+            if (index !== -1){
+                diceValues.splice(index, 1); // remove from values
+                
+                if (dice.parentElement.classList.contains('dices')){
+                    this.moveDice(BOT, dice);
+                }
+            } else {
+                if (!dice.parentElement.classList.contains('dices')){
+                    this.moveDice(BOT, dice);
+                }
+            }
+        }
         
-        for (let dice of this.dices) {
+        /*for (let dice of this.dices) {
             order = +dice.getAttribute('order');
 
             if (+(order > 4) == groupIdx) {
@@ -33,7 +52,7 @@ export default class DiceManager {
                     }
                 } 
             }
-        }
+        }*/
     }
 
     setEnabled(enabled) {
