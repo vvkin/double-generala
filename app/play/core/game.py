@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import pickle
+import copy
 from typing import Dict, List, Tuple
 
 from .const import (
@@ -19,6 +20,7 @@ class Game:
         self.results = np.zeros(2)
         self.scores = np.zeros(2)
         self.used_mask = np.zeros(COMBINATIONS_NUM, np.bool)
+        self.bot_mask = np.zeros(COMBINATIONS_NUM, np.bool)
         self.bot = GeneralaBot()
         self.winner = None
         self.moves_now = None
@@ -27,6 +29,7 @@ class Game:
         self.move_idx = 0
         self.allowed = True
         self.moves = np.zeros(2, np.bool)
+        self.round = 0
     
     def get_first_turn(self) -> int:
         choice = random.choice([USER, BOT])
@@ -61,11 +64,21 @@ class Game:
         self.scores[:] = 0
         self.moves[:] = False
         self.bot.update()
-
+        self.round += 1
+        if self.round == 10: self.set_winner()
+        print(self.round)
         print(f'USER {self.results[USER]} BOT {self.results[BOT]}')
        
     def is_game_end(self) -> bool:
         return not (self.winner is None)
+    
+    def set_winner(self) -> None:
+        if self.results[USER] > self.results[BOT]:
+            self.winner = USER
+        else: self.winner = BOT
+    
+    def get_totals(self) -> None:
+        return self.results[USER], self.results[BOT]
 
     def get_state(self) -> Dict[str, int or bool]:
         self.allowed = (self.move_idx < self.moves_num)
@@ -81,12 +94,15 @@ class Game:
         return self.moves[0] and self.moves[1]
     
     def get_bot_move(self, group: int) -> Tuple[int]:
+        if self.bot.last[group]: return self.bot.on_board[group]
         values = self.bot.on_board[group] + self.bot.rand[group]
         moves = (self.moves_num - self.move_idx) // 2
         
-        if self.bot.last[group] or not moves:
+        if not moves:
             best_move = values
-            self.scores[group] = Game.get_score(values)
+            result = self.bot.ai.get_score_and_idx(values)
+            self.scores[group] = result[1]
+            self.bot.ai.mark_as_used(result[0])
             self.bot.last[group] = True
         else:
             best_move = self.bot.ai(values, 2)
@@ -125,8 +141,20 @@ class Game:
 
 class AI:
     def __init__(self) -> None:
-        self.dices_num = 5
-        self.empty = Game.estimate_move(Game.all_moves[5])
+        self.empty = Game.estimate_move(Game.all_moves[DICES_NUM])
+        self.scores = copy.deepcopy(Game.all_scores)
+
+    def mark_as_used(self, comb_idx: int) -> None:
+        for key in self.scores:
+            self.scores[key][comb_idx] = -1
+    
+    def get_score(self, dices: List[int]) -> int:
+        return max(self.scores[tuple(sorted(dices))])
+    
+    def get_score_and_idx(self, dices: List[int]) -> Tuple[int]:
+        scores = self.scores[tuple(sorted(dices))]
+        max_idx = np.argmax(scores)
+        return max_idx, scores[max_idx]
     
     def __call__(self, dices: List[int], max_depth: int) -> Tuple[int]:
         self.best_move = tuple(dices)
@@ -135,18 +163,18 @@ class AI:
         return self.best_move
     
     def seek_move(self, dices: List[int], depth: int, max_depth: int = 2) -> float:
-        if depth == max_depth: return Game.get_score(dices)
+        if depth == max_depth: return self.get_score(dices)
 
         max_value = float('-inf')
 
         for move in back_moves(dices): # moves after return [0, n] dices
-            dice_count = self.dices_num - len(move)
+            dice_count = DICES_NUM - len(move)
             heuristic = 0
 
             if not move: # make new roll
                 heuristic = self.empty
             elif not dice_count: # choose current board state
-                heuristic = Game.get_score(move)
+                heuristic = self.get_score(move)
             else: # estimate random moves
                 for combs, chance in Game.all_moves[dice_count]:
                     current_dices = move + combs
@@ -171,4 +199,4 @@ class GeneralaBot:
     def roll_dices(self, group: int) -> None:
         dices_count = DICES_NUM - len(self.on_board[group])
         self.rand[group] = get_random_dices(dices_count)
-        
+    

@@ -44,9 +44,13 @@ def on_turn(data):
             data['end'] = True
 
         emit('show move', data)
-
-        if game.is_game_end(): 
-            emit('game over', game.winner)
+        
+    if game.is_game_end(): 
+        response = {
+            'winner': game.winner, 
+            'scores': game.get_totals()
+            }
+        emit('game over', response)
 
 @socketio.on('bot roll', namespace='/play')
 def on_bot_roll():
@@ -69,6 +73,16 @@ def on_bot_turn():
         game.get_bot_state(1)
     ]
     emit('bot move', {'moves': moves, 'state': state})
+
+@socketio.on('is end', namespace='/play')
+def on_end():
+    game = games[request.sid]
+    if game.is_game_end(): 
+        response = {
+            'winner': game.winner, 
+            'scores': game.get_totals()
+            }
+        emit('game over', response)
 
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():

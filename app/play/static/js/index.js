@@ -67,13 +67,21 @@ socket.on('bot done', async (score) => {
     diceCup.classList.remove('is-disabled');
     tableManager.setNewRound();
     diceManager.setEnabled(true);
+    socket.emit('is end');
 });
 
-socket.on('game over', (winner) => {
+socket.on('game over', (data) => {
     diceCup.classList.add('is-disabled');
+    diceManager.setEnabled(false);
     diceManager.hideAllDices();
-    tableManager.markWinner(winner);
     tableManager.setEnabled(false);
+    
+    tableManager.setNewRound();
+    tableManager.setTotalScore(data.scores[BOT], BOT);
+    tableManager.setTotalScore(data.scores[USER], USER);
+    tableManager.markWinner(data.winner);
+
+    socket.disconnect();
 });
 
 async function sleep(ms) {

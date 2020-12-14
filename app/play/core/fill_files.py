@@ -25,7 +25,7 @@ def get_scores(dices):
     if len(unique_dices) == 1: # five of a kind
         combinations[9] = 50
 
-    return tuple(combinations)
+    return combinations
 
 def get_moves(dice_count):
     all_combs = itertools.combinations_with_replacement(
